@@ -7,9 +7,12 @@ import {
   FiShield,
   FiCalendar,
   FiHash,
+  FiArrowLeft,
+  FiArrowRight,
+  FiShoppingBag,
+  FiExternalLink,
 } from "react-icons/fi";
 import orderService from "../services/order";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 const MyOrders = () => {
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [mounted, setMounted] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === "admin";
@@ -25,12 +29,7 @@ const MyOrders = () => {
     const delta = 2;
     const range = [];
     const rangeWithDots = [];
-
-    for (
-      let i = Math.max(2, page - delta);
-      i <= Math.min(pages - 1, page + delta);
-      i++
-    ) {
+    for (let i = Math.max(2, page - delta); i <= Math.min(pages - 1, page + delta); i++) {
       range.push(i);
     }
     if (page - delta > 2) rangeWithDots.push("...");
@@ -38,26 +37,22 @@ const MyOrders = () => {
     rangeWithDots.push(...range);
     if (page + delta < pages - 1) rangeWithDots.push("...");
     if (pages > 1) rangeWithDots.push(pages);
-
     return rangeWithDots;
   };
 
   useEffect(() => {
     let isMounted = true;
     const fetchOrders = async () => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
+      if (!user) { navigate("/login"); return; }
       setLoading(true);
+      setMounted(false);
       try {
         const res = await orderService.getMyOrders({ page, limit: 5 });
         if (isMounted) {
           setOrders(res.data?.orders || []);
           setPages(res.data?.pages || 1);
-          requestAnimationFrame(() =>
-            window.scrollTo({ top: 0, behavior: "smooth" }),
-          );
+          requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+          setTimeout(() => setMounted(true), 50);
         }
       } catch (error) {
         console.error(error);
@@ -66,263 +61,274 @@ const MyOrders = () => {
       }
     };
     fetchOrders();
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [page]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white font-medium">
-        Loading orders...
+      <div className="min-h-screen bg-[#080a0f] flex flex-col items-center justify-center gap-4">
+        <div className="flex gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
+        <p className="text-sm text-white/30 tracking-widest uppercase">Loading orders</p>
       </div>
     );
+  }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-10 dark:bg-gray-900">
-      {/* Header - Role Identification */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-extrabold dark:text-white tracking-tight">
-              {isAdmin ? "Order Management" : "My Purchase History"}
-            </h2>
-            {isAdmin && (
-              <span className="flex items-center gap-1 bg-indigo-600 text-white text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wider shadow-sm">
-                <FiShield size={12} /> Admin Mode
-              </span>
-            )}
+    <div className="min-h-screen bg-[#080a0f]">
+
+      {/* Blobs */}
+      <div className="fixed top-0 -left-25 w-80 h-80 bg-indigo-500 rounded-full blur-[120px] opacity-[0.07] pointer-events-none" />
+      <div className="fixed bottom-0 -right-20 w-72 h-72 bg-violet-600 rounded-full blur-[100px] opacity-[0.07] pointer-events-none" />
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
+
+        {/* Header */}
+        <div
+          className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 mb-10 transition-all duration-700 ${
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          <div>
+            <p className="text-[11px] font-medium tracking-[4px] uppercase text-indigo-400 mb-1">
+              {isAdmin ? "Admin Panel" : "Account"}
+            </p>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+                {isAdmin ? "Order Management" : "My Orders"}
+              </h1>
+              {isAdmin && (
+                <span className="flex items-center gap-1 bg-indigo-500/15 border border-indigo-500/25 text-indigo-400 text-[9px] px-2 py-1 rounded-lg font-bold uppercase tracking-wider">
+                  <FiShield size={10} /> Admin
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-white/35">
+              {isAdmin
+                ? "Overview of all customer transactions."
+                : "Review and track your recent orders."}
+            </p>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {isAdmin
-              ? "Overview of all customer transactions and delivery status."
-              : "Review and track your recent orders."}
-          </p>
+
+          <button
+            onClick={() => navigate("/product")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-indigo-500 to-violet-600 hover:from-violet-600 hover:to-indigo-500 text-white text-sm font-medium shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:-translate-y-0.5 transition-all duration-200 shrink-0"
+          >
+            <FiShoppingBag size={14} /> Continue Shopping
+          </button>
         </div>
 
-        <button
-          onClick={() => navigate("/product")}
-          className="bg-indigo-600 hover:bg-indigo-700 transition-all text-white px-6 py-3 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none font-semibold text-sm"
-        >
-          Continue Shopping
-        </button>
-      </div>
+        {/* Empty state */}
+        {orders.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <FiShoppingBag size={26} className="text-white/20" />
+            </div>
+            <p className="text-white/30 text-sm">No orders found</p>
+          </div>
+        )}
 
-      {/* Orders List */}
-      <div className="space-y-8">
-        {orders.map((order) => (
+        {/* Orders */}
+        <div className="space-y-5">
+          {orders.map((order, idx) => (
+            <div
+              key={order._id}
+              className={`group bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden hover:bg-white/5 hover:border-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500 ${
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+              }`}
+              style={{ transitionDelay: `${idx * 80}ms` }}
+            >
+              {/* Card top bar */}
+              <div className={`px-5 py-4 flex flex-wrap justify-between items-center gap-3 border-b border-white/6 ${
+                isAdmin ? "bg-indigo-500/4" : "bg-white/2"
+              }`}>
+                <div className="flex items-center gap-3">
+                  {/* Avatar */}
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold ${
+                    order.user?.role === "admin"
+                      ? "bg-rose-500/15 text-rose-400 border border-rose-500/20"
+                      : "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20"
+                  }`}>
+                    {(isAdmin ? order.user?.username : user?.username)?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+
+                  <div>
+                    {isAdmin && (
+                      <p className={`text-[9px] font-bold uppercase tracking-[2px] mb-0.5 ${
+                        order.user?.role === "admin" ? "text-rose-400" : "text-indigo-400"
+                      }`}>
+                        {order.user?.role === "admin" ? "Administrator" : "Customer"}
+                        {order.user?.role === "admin" && (
+                          <span className="ml-2 bg-rose-500/15 border border-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded text-[8px]">
+                            Internal
+                          </span>
+                        )}
+                      </p>
+                    )}
+                    <p className="text-sm font-semibold text-white/85">
+                      {isAdmin ? order.user?.username || "Unknown User" : user?.username}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-white/35">
+                    <FiCalendar size={11} />
+                    {new Date(order.createdAt).toLocaleDateString("en-IN")}
+                  </div>
+
+                  {/* Status badge */}
+                  <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${
+                    order.status === "Paid"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                  }`}>
+                    {order.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card body */}
+              <div className="p-5">
+                <div className="flex flex-col lg:flex-row gap-6">
+
+                  {/* Product images */}
+                  <div className="flex gap-2.5 flex-wrap lg:max-w-45">
+                    {order.items?.map((item) => (
+                      <div key={item._id} className="relative">
+                        <div className="w-16 h-16 rounded-xl bg-[#0d0f16] border border-white/6 overflow-hidden">
+                          <img
+                            src={`${import.meta.env.VITE_IMAGE_URL}${item.image}`}
+                            alt="product"
+                            onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=No+Image"; }}
+                            className="w-full h-full object-contain p-1.5 transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </div>
+                        <span className="absolute -bottom-1 -right-1 w-5 h-5 flex items-center justify-center bg-[#0d0f16] border border-white/10 text-white text-[9px] font-bold rounded-full">
+                          {item.qty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+                    {/* Transaction */}
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[2px] text-indigo-400 mb-3">
+                        Transaction Summary
+                      </p>
+                      <div className="bg-white/3 border border-white/6 rounded-xl p-4 space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-white/35">Order ID</span>
+                          <span className="font-mono text-[10px] text-white/55">
+                            #{order._id.slice(-8).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="h-px bg-white/5" />
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-white/35">Total Paid</span>
+                          <span className="text-base font-black text-indigo-400">
+                            ₹{order.totalAmount?.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Shipping */}
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[2px] text-indigo-400 mb-3">
+                        Shipping Destination
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2.5 text-xs text-white/55">
+                          <FiUser size={11} className="text-white/25 shrink-0" />
+                          <span className="font-medium text-white/75">{order.shipping?.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5 text-xs text-white/55">
+                          <FiPhone size={11} className="text-white/25 shrink-0" />
+                          <span>{order.shipping?.phone}</span>
+                        </div>
+                        <div className="flex items-start gap-2.5 text-xs text-white/55">
+                          <FiMapPin size={11} className="text-white/25 shrink-0 mt-0.5" />
+                          <span className="leading-relaxed">{order.shipping?.address}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-5 pt-4 border-t border-white/5 flex justify-between items-center">
+                  <div className="flex items-center gap-1.5 text-[9px] text-white/20 font-mono">
+                    <FiHash size={9} /> {order._id}
+                  </div>
+                  <button
+                    onClick={() => navigate(`/product/description/${order.items[0]._id}`)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-medium text-indigo-400 hover:text-indigo-300 bg-indigo-500/0 hover:bg-indigo-500/10 border border-indigo-500/0 hover:border-indigo-500/20 transition-all duration-200"
+                  >
+                    View Specs <FiExternalLink size={11} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {pages > 1 && (
           <div
-            key={order._id}
-            className={`rounded-3xl border transition-all duration-300 overflow-hidden ${
-              isAdmin
-                ? "bg-white dark:bg-gray-800 border-indigo-100 dark:border-indigo-900/50 shadow-xl shadow-indigo-50/50 dark:shadow-none"
-                : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-sm"
+            className={`mt-12 flex justify-center transition-all duration-700 delay-300 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            {/* Top Bar - Admin Specific Info */}
-            <div
-              className={`p-5 flex flex-wrap justify-between items-center gap-4 ${isAdmin ? "bg-indigo-50/50 dark:bg-indigo-900/20" : "bg-gray-50/50 dark:bg-gray-800/50"}`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="space-y-1">
-                  {/* Dynamic Label based on Role */}
-                  {isAdmin && (
-                  <div className="flex items-center gap-2">
-                    
-                      
-                   
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-[0.15em] ${
-                        order.user?.role === "admin"
-                          ? "text-rose-500 dark:text-rose-400"
-                          : "text-indigo-500"
-                      }`}
-                    >
-                      {order.user?.role === "admin"
-                        ? "Administrator"
-                        : "Customer"}
-                    </span>
+            <div className="flex items-center gap-1.5 p-1.5 bg-white/3 border border-white/[0.07] rounded-2xl">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                <FiArrowLeft size={15} />
+              </button>
 
-                    {/* Subtle Badge for Admin Role */}
-                    {isAdmin && order.user?.role === "admin" && (
-                      <span className="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold border border-rose-200 dark:border-rose-800">
-                        Internal Order
-                      </span>
-                    )}
-                    
-                  </div>
-                  )}
+              {getPagination().map((item, index) =>
+                item === "..." ? (
+                  <span key={index} className="w-9 h-9 flex items-center justify-center text-white/20 text-xs">
+                    •••
+                  </span>
+                ) : (
+                  <button
+                    key={index}
+                    onClick={() => setPage(item)}
+                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 ${
+                      page === item
+                        ? "bg-linear-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25"
+                        : "text-white/40 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
 
-                  {/* Name Display */}
-                  <h3 className="text-lg font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
-                    <FiUser
-                      className={`${order.user?.role === "admin" ? "text-rose-500" : "text-indigo-500"}`}
-                    />
-                    <span className="truncate">
-                      {isAdmin
-                        ? order.user?.username || "Unknown User"
-                        : user?.username}
-                    </span>
-                  </h3>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-6">
-                <div className="text-right hidden sm:block">
-                  <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
-                    Ordered On
-                  </p>
-                  <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1">
-                    <FiCalendar className="text-gray-400" />{" "}
-                    {new Date(order.createdAt).toLocaleDateString("en-IN")}
-                  </p>
-                </div>
-                <div
-                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm border ${
-                    order.status === "Paid"
-                      ? "bg-green-50 text-green-600 border-green-100 dark:bg-green-900/20 dark:border-green-800"
-                      : "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800"
-                  }`}
-                >
-                  {order.status}
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="p-6">
-              <div className="flex flex-col lg:flex-row gap-10">
-                {/* Image Gallery */}
-                <div className="flex gap-3 flex-wrap max-w-xs">
-                  {order.items?.map((item) => (
-                    <div
-                      key={item._id}
-                      className="relative group cursor-pointer"
-                    >
-                      <img
-                        src={`${import.meta.env.VITE_IMAGE_URL}${item.image}`}
-                        alt="product"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/150?text=No+Image";
-                        }}
-                        className="w-20 h-20 object-cover rounded-2xl border-2 border-transparent group-hover:border-indigo-500 transition-all shadow-sm"
-                      />
-                      <div className="absolute -bottom-1 -right-1 bg-gray-900 text-white text-[10px] px-1.5 rounded-lg font-bold">
-                        x{item.qty}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Details Grid */}
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Summary */}
-                  <div className="space-y-4">
-                    <h4 className="text-[14px] font-black text-indigo-500 uppercase tracking-widest">
-                      Transaction Summary
-                    </h4>
-                    <div className="space-y-3 bg-gray-50/50 dark:bg-gray-900/30 p-4 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Order ID</span>
-                        <span className="font-mono text-xs dark:text-gray-300">
-                          #{order._id.slice(-8).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center pt-2 border-t dark:border-gray-700">
-                        <span className="text-gray-500 font-medium text-sm">
-                          Total Paid
-                        </span>
-                        <span className="text-xl font-black text-gray-900 dark:text-white">
-                          ₹{order.totalAmount?.toLocaleString("en-IN")}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shipping */}
-                  <div className="space-y-4">
-                    <h4 className="text-[14px] font-black text-indigo-500 uppercase  tracking-widest">
-                      Shipping Destination
-                    </h4>
-                    <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                      <p className="flex items-start gap-3">
-                        <FiUser className="mt-1 shrink-0 text-gray-400" />
-                        <span className="font-semibold text-gray-900 dark:text-gray-200">
-                          {order.shipping?.name}
-                        </span>
-                      </p>
-                      <p className="flex items-start gap-3">
-                        <FiPhone className="mt-1 shrink-0 text-gray-400" />
-                        <span>{order.shipping?.phone}</span>
-                      </p>
-                      <p className="flex items-start gap-3 leading-relaxed">
-                        <FiMapPin className="mt-1 shrink-0 text-gray-400" />
-                        <span>{order.shipping?.address}</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Footer */}
-              <div className="mt-8 pt-6 border-t dark:border-gray-700 flex justify-between items-center">
-                <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono">
-                  <FiHash /> {order._id}
-                </div>
-                <button
-                  onClick={() =>
-                    navigate(`/product/description/${order.items[0]._id}`)
-                  }
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors border border-indigo-100 dark:border-indigo-900/50"
-                >
-                  View Full Specs
-                </button>
-              </div>
+              <button
+                disabled={page === pages}
+                onClick={() => setPage(page + 1)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                <FiArrowRight size={15} />
+              </button>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Pagination UI */}
-      <div className="mt-16 flex flex-col items-center gap-6">
-        <div className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-            className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-all"
-          >
-            <FiArrowLeft size={20} className="dark:text-white" />
-          </button>
-
-          {getPagination().map((item, index) =>
-            item === "..." ? (
-              <span key={index} className="px-2 text-gray-400">
-                •••
-              </span>
-            ) : (
-              <button
-                key={index}
-                onClick={() => setPage(item)}
-                className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
-                  page === item
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none"
-                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                {item}
-              </button>
-            ),
-          )}
-
-          <button
-            disabled={page === pages}
-            onClick={() => setPage(page + 1)}
-            className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 transition-all"
-          >
-            <FiArrowRight size={20} className="dark:text-white" />
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

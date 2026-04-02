@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
 const faqs = [
@@ -31,64 +31,132 @@ const faqs = [
 
 const Faq = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t);
+  }, []);
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-  <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-14 px-4">
-  <div className="max-w-4xl mx-auto">
+    <div className="relative min-h-screen bg-[#080a0f] py-14 px-4 overflow-hidden">
 
-    {/* Header */}
-    <div className="text-center mb-12">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-        Frequently Asked Questions
-      </h1>
-      <p className="text-gray-500 dark:text-gray-400 mt-3">
-        Find answers to common questions about orders, payments, and delivery.
-      </p>
-    </div>
+      {/* Blobs */}
+      <div className="absolute -top-15 -left-20 w-72 h-72 sm:w-96 sm:h-96 bg-indigo-500 rounded-full blur-[110px] opacity-[0.1] pointer-events-none" />
+      <div className="absolute -bottom-15 -right-20 w-64 h-64 sm:w-80 sm:h-80 bg-violet-600 rounded-full blur-[100px] opacity-[0.1] pointer-events-none" />
 
-    {/* FAQ List */}
-    <div className="space-y-4">
-      {faqs.map((faq, index) => (
+      {/* Grid overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.025]"
+        style={{
+          backgroundImage:
+            "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+
+      <div className="relative z-10 max-w-2xl mx-auto">
+
+        {/* Header */}
         <div
-          key={index}
-          className="bg-white dark:bg-gray-800
-                     border border-gray-200 dark:border-gray-700
-                     rounded-xl shadow-sm"
+          className={`text-center mb-12 transition-all duration-700 ${
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          }`}
         >
-          <button
-            onClick={() => toggleFAQ(index)}
-            className="w-full flex justify-between items-center px-6 py-5 text-left"
-          >
-            <span className="font-medium text-gray-900 dark:text-white">
-              {faq.question}
-            </span>
-
-            <FiChevronDown
-              className={`text-xl transition-transform duration-300
-                ${
-                  openIndex === index
-                    ? "rotate-180 text-indigo-600"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-            />
-          </button>
-
-          {openIndex === index && (
-            <div className="px-6 pb-5 text-gray-600 dark:text-gray-300 leading-relaxed">
-              {faq.answer}
-            </div>
-          )}
+          <p className="text-[11px] font-medium tracking-[4px] uppercase text-indigo-400 mb-3">
+            Help Center
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-3">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-sm text-white/35">
+            Find answers to common questions about orders, payments, and delivery.
+          </p>
         </div>
-      ))}
+
+        {/* FAQ list */}
+        <div className="space-y-3">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+
+            return (
+              <div
+                key={index}
+                className={`group relative bg-white/3 border rounded-2xl overflow-hidden transition-all duration-500 ${
+                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                } ${
+                  isOpen
+                    ? "border-indigo-500/30 shadow-lg shadow-indigo-500/5"
+                    : "border-white/[0.07] hover:border-white/13"
+                }`}
+                style={{ transitionDelay: `${100 + index * 70}ms` }}
+              >
+                {/* Active top accent */}
+                <div
+                  className={`absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-indigo-500 to-transparent transition-opacity duration-300 ${
+                    isOpen ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+
+                {/* Question button */}
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full flex justify-between items-center px-5 sm:px-6 py-4 sm:py-5 text-left gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Number badge */}
+                    <span
+                      className={`shrink-0 w-6 h-6 rounded-lg text-[10px] font-bold flex items-center justify-center transition-all duration-300 ${
+                        isOpen
+                          ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
+                          : "bg-white/5 text-white/25 border border-white/[0.07]"
+                      }`}
+                    >
+                      {index + 1}
+                    </span>
+                    <span
+                      className={`text-sm sm:text-base font-semibold transition-colors duration-200 ${
+                        isOpen ? "text-white" : "text-white/65 group-hover:text-white/85"
+                      }`}
+                    >
+                      {faq.question}
+                    </span>
+                  </div>
+
+                  <FiChevronDown
+                    size={16}
+                    className={`shrink-0 transition-all duration-300 ${
+                      isOpen
+                        ? "rotate-180 text-indigo-400"
+                        : "text-white/25 group-hover:text-white/45"
+                    }`}
+                  />
+                </button>
+
+                {/* Answer */}
+                <div
+                  className={`overflow-hidden transition-all duration-400 ease-in-out ${
+                    isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="px-5 sm:px-6 pb-5">
+                    <div className="h-px bg-white/5 mb-4" />
+                    <p className="text-sm text-white/45 leading-relaxed pl-9">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
     </div>
-
-  </div>
-</div>
-
   );
 };
 

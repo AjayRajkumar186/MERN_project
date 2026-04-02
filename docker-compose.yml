@@ -7,10 +7,11 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db # ✅ Keeps your data safe on your hard drive
+      - mongo_data:/data/db
 
   backend:
-    build: ./backend
+    # Build-ku bathila Docker Hub image use panrom
+    image: ajayrajkumar186/shopmate-backend:v4 
     container_name: backend_container
     ports:
       - "5000:5000"
@@ -24,12 +25,13 @@ services:
       - mongodb
 
   frontend:
-    build: ./frontend
+    # Build-ku bathila Docker Hub image use panrom
+    image: ajayrajkumar186/shopmate-frontend:v2
     container_name: frontend_container
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://api.shopmate.test # Updated to use the custom backend domain
+      - VITE_API_URL=http://shopmate.test
     depends_on:
       - backend
 
@@ -39,11 +41,11 @@ services:
     ports:
       - "80:80"
     volumes:
+      # Note: Indha nginx.conf file-um unga friend kitta irukkanum
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - frontend
       - backend
 
-# ✅ Define the volume used by mongodb
 volumes:
   mongo_data:

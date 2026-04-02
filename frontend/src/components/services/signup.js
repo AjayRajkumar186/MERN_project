@@ -8,3 +8,12 @@ export const signUp = async (data) => {
     throw err.response?.data || { message: "Something went wrong" };
   }
 };
+
+export const signUpVerify = async (data) => {
+  try {
+    const res = await api.post("/auth/signup/verify", data);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { message: "Something went wrong" };
+  }
+};

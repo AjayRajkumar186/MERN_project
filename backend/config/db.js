@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Your direct connection string with the database name "myDatabase"
+// Your direct connection string with the database name "shopmate"
 const MONGO_URL = process.env.MONGODB_URL;
 
 const connectDB = async () => {

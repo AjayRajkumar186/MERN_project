@@ -38,7 +38,7 @@ const ScrollToTop = () => {
   return (
     <button
       onClick={scrollToTopSmooth}
-      className="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 cursor-pointer"
+      className="fixed bottom-6 right-6 z-50  text-white p-3 rounded-full shadow-lg  transition duration-300 cursor-pointer"
       aria-label="Scroll to top"
     >
       <FiArrowUp size={22} />

@@ -1,33 +1,40 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, text }) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', // Customize if using another provider
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
+  const EMAIL_USER = process.env.EMAIL_USER;
+  const EMAIL_PASS = process.env.EMAIL_PASS;
 
-    const mailOptions = {
-      from: `"Shopmate" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      text
-    };
-
-    // If credentials are set, send the real email. Otherwise log it to console.
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await transporter.sendMail(mailOptions);
-      console.log(`Email sent to ${to}`);
-    } else {
-      console.log(`[MOCK EMAIL] To: ${to} | Subject: ${subject} | Text: ${text}`);
-    }
-  } catch (error) {
-    console.error("Error sending email:", error);
-    // Continue execution even if email fails (or throw based on preference).
+  if (!EMAIL_USER || !EMAIL_PASS) {
+   // console.warn(`[MOCK EMAIL] To: ${to} | Subject: ${subject} | Text: ${text}`);
+    return;
   }
+
+  // Create transporter with explicit Gmail SMTP settings (more reliable than service shorthand)
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // use STARTTLS
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS  // Must be a Gmail App Password (16 chars), NOT your login password
+    },
+    debug: process.env.NODE_ENV !== 'production', // logs SMTP traffic in dev
+    logger: process.env.NODE_ENV !== 'production'
+  });
+
+  const mailOptions = {
+    from: `"Shopmate" <${EMAIL_USER}>`,
+    to,
+    subject,
+    text
+  };
+
+  // Verify connection before sending — this surfaces auth errors immediately
+  await transporter.verify();
+
+  await transporter.sendMail(mailOptions);
+  console.log(`✅ Email sent to ${to}`);
 };
 
 module.exports = sendEmail;
+

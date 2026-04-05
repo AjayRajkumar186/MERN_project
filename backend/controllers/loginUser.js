@@ -6,6 +6,9 @@ const sendEmail = require('../utils/sendEmail');
 
 console.log("JWT Secret Loaded:", process.env.JWT_SECRET ? "YES" : "NO");
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /login  →  user can login
+// ─────────────────────────────────────────────────────────────────────────────
 exports.loginUser = async (req, res) => {
   const { email } = req.body;
 
@@ -47,6 +50,9 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /verify-login  →  user can verify login
+// ─────────────────────────────────────────────────────────────────────────────
 exports.verifyLogin = async (req, res) => {
   try {
     const { email, otp } = req.body;

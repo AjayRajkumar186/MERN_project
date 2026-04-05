@@ -9,10 +9,16 @@ const {
     deleteBanner
 } = require('../controllers/bannerController');
 
-// Public route to get active banners
+// —————————————————————————————————————————————————————————————————————————————
+// Public Route
+// —————————————————————————————————————————————————————————————————————————————
+
 router.get('/', getAllBanners);
 
-// Admin routes
+// —————————————————————————————————————————————————————————————————————————————
+// Admin Routes
+// —————————————————————————————————————————————————————————————————————————————
+
 router.post('/', protect, authorize('admin'), upload.single('image'), createBanner);
 router.delete('/:id', protect, authorize('admin'), deleteBanner);
 

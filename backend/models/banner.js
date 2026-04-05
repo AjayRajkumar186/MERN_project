@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Banner Schema
+// —————————————————————————————————————————————————————————————————————————————
+
 const bannerSchema = new mongoose.Schema({
     image: {
         type: String,

@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Notification Schema
+// —————————————————————————————————————————————————————————————————————————————
+
 const notificationSchema = new mongoose.Schema(
   {
     name: {

@@ -9,6 +9,10 @@ const {
 
 const { protect } = require("../middleware/authMiddleware");
 
+// —————————————————————————————————————————————————————————————————————————————
+// Protected Routes
+// —————————————————————————————————————————————————————————————————————————————
+
 router.post("/create-order", protect, createOrder);
 router.post("/verify-payment", protect, verifyPayment);
 router.get("/my-orders", protect, getMyOrders);

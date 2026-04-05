@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 const otpGenerator = require('otp-generator');
 const sendEmail = require('../utils/sendEmail');
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /register  -> create user
+// ─────────────────────────────────────────────────────────────────────────────
 exports.registerUser = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
@@ -55,6 +58,9 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /verify-signup  -> verify user
+// ─────────────────────────────────────────────────────────────────────────────
 exports.verifySignup = async (req, res) => {
   try {
     const { email, otp } = req.body;

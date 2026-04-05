@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Product Schema
+// —————————————————————————————————————————————————————————————————————————————
+
 const productSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +30,7 @@ const productSchema = new mongoose.Schema({
   reviews: { type: Number, default: 0 }
 }, { timestamps: true });
 
-// --- Indexes ---
+
 productSchema.index({ category: 1 });                 // filter by category (most common)
 productSchema.index({ price: 1 });                    // sort/filter by price
 productSchema.index({ rating: -1 });                  // top-rated products

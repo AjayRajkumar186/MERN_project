@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Category Schema
+// —————————————————————————————————————————————————————————————————————————————
+
 const categoryschema = new mongoose.Schema({
     name:{
         type:String,

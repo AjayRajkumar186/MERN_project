@@ -9,19 +9,34 @@ const {
   clearNotifications
 } = require('../controllers/notificationController');
 
-// POST /notifications  →  any authenticated user (admin or user)
+// —————————————————————————————————————————————————————————————————————————————
+// Public Route
+// —————————————————————————————————————————————————————————————————————————————
+
 router.post('/', protect, createNotification);
 
-// GET  /notifications  →  admin only
+// —————————————————————————————————————————————————————————————————————————————
+// Admin Routes
+// —————————————————————————————————————————————————————————————————————————————
+
 router.get('/', protect, authorize('admin'), getAllNotifications);
 
+// —————————————————————————————————————————————————————————————————————————————
 // PUT /notifications/:id  →  admin only
+// —————————————————————————————————————————————————————————————————————————————
+
 router.put('/:id', protect, authorize('admin'), markAsRead);
 
+// —————————————————————————————————————————————————————————————————————————————
 // DELETE /notifications/:id  →  admin only (single)
+// —————————————————————————————————————————————————————————————————————————————
+
 router.delete('/:id', protect, authorize('admin'), deleteNotification);
 
+// —————————————————————————————————————————————————————————————————————————————
 // DELETE /notifications  →  admin only (clear all)
+// —————————————————————————————————————————————————————————————————————————————
+
 router.delete('/', protect, authorize('admin'), clearNotifications);
 
 module.exports = router;

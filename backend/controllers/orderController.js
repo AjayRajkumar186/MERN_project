@@ -3,6 +3,9 @@ const Order = require("../models/order");
 
 let razorpay;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /razorpay-key  
+// ─────────────────────────────────────────────────────────────────────────────
 const getRazorpay = () => {
     if (!razorpay) {
         if (!process.env.RAZORPAY_KEY || !process.env.RAZORPAY_SECRET) {
@@ -17,7 +20,9 @@ const getRazorpay = () => {
 };
 
 
-// ✅ Create Razorpay Order
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /order  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.createOrder = async (req, res) => {
     try {
         const { amount } = req.body;
@@ -44,7 +49,9 @@ exports.createOrder = async (req, res) => {
 
 
 
-// ✅ Verify Payment + Save Order
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /verify-payment  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.verifyPayment = async (req, res) => {
     try {
         const {
@@ -81,7 +88,9 @@ exports.verifyPayment = async (req, res) => {
 
 
 
-// ✅ Get Orders
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /order  -> admin and user both
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getMyOrders = async (req, res) => {
     try {
         let query = {};

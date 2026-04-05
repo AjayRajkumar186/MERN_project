@@ -1,6 +1,8 @@
 const Banner = require('../models/banner');
 
-// CREATE Banner
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /banner  -> only admin can create
+// ─────────────────────────────────────────────────────────────────────────────
 exports.createBanner = async (req, res) => {
     try {
         const { isActive, sortOrder } = req.body;
@@ -27,7 +29,9 @@ exports.createBanner = async (req, res) => {
     }
 };
 
-// GET ALL active Banners
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /banner  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getAllBanners = async (req, res) => {
     try {
         const banners = await Banner.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 });
@@ -43,7 +47,9 @@ exports.getAllBanners = async (req, res) => {
 };
 
 
-// DELETE Banner
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /banner/:id  -> only admin can delete
+// ─────────────────────────────────────────────────────────────────────────────
 exports.deleteBanner = async (req, res) => {
     try {
         const banner = await Banner.findByIdAndDelete(req.params.id);

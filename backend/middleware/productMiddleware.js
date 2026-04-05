@@ -1,6 +1,14 @@
 const Product = require('../models/product');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Has Value
+// —————————————————————————————————————————————————————————————————————————————
+
 const hasValue = (value) => value !== undefined && value !== null && String(value).trim() !== '';
+
+// —————————————————————————————————————————————————————————————————————————————
+// Validate Title
+// —————————————————————————————————————————————————————————————————————————————
 
 const validateTitle = (title, res) => {
   if (title.length < 3) {
@@ -14,6 +22,10 @@ const validateTitle = (title, res) => {
   return true;
 };
 
+// —————————————————————————————————————————————————————————————————————————————
+// Validate Price
+// —————————————————————————————————————————————————————————————————————————————
+
 const validatePrice = (price, res) => {
   if (Number.isNaN(Number(price)) || Number(price) <= 0) {
     res.status(400).json({
@@ -26,6 +38,10 @@ const validatePrice = (price, res) => {
   return true;
 };
 
+// —————————————————————————————————————————————————————————————————————————————
+// Validate Stock
+// —————————————————————————————————————————————————————————————————————————————
+
 const validateStock = (stock, res) => {
   if (Number.isNaN(Number(stock)) || Number(stock) < 0) {
     res.status(400).json({
@@ -37,6 +53,10 @@ const validateStock = (stock, res) => {
 
   return true;
 };
+
+// —————————————————————————————————————————————————————————————————————————————
+// Validate Create Product
+// —————————————————————————————————————————————————————————————————————————————
 
 exports.validateCreateProduct = (req, res, next) => {
   const { title, description1, description2, category, stock, price } = req.body;
@@ -81,6 +101,10 @@ exports.validateCreateProduct = (req, res, next) => {
   next();
 };
 
+// —————————————————————————————————————————————————————————————————————————————
+// Validate Update Product
+// —————————————————————————————————————————————————————————————————————————————
+
 exports.validateUpdateProduct = (req, res, next) => {
   const { title, description1, description2, category, stock, price } = req.body;
   const hasBodyFields = [title, description1, description2, category, stock, price].some(hasValue);
@@ -121,6 +145,10 @@ exports.validateUpdateProduct = (req, res, next) => {
   next();
 };
 
+// —————————————————————————————————————————————————————————————————————————————
+// Check Product Exists
+// —————————————————————————————————————————————————————————————————————————————
+
 exports.checkProductExists = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id).populate('user', 'username email role').populate('category', 'name');
@@ -142,6 +170,10 @@ exports.checkProductExists = async (req, res, next) => {
     });
   }
 };
+
+// —————————————————————————————————————————————————————————————————————————————
+// Format Form Data
+// —————————————————————————————————————————————————————————————————————————————
 
 exports.formatFormData = (req, res, next) => {
   // Parse the specs string back into an object

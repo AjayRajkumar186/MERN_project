@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Product = require('../models/product');
 const User = require('../models/auth');
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Payload Builder for product  
+// ─────────────────────────────────────────────────────────────────────────────
 const buildProductPayload = (req, { isCreate = false } = {}) => {
   const payload = {};
   const { title, description1, description2, category, price, stock, rating, reviews } = req.body;
@@ -54,7 +57,9 @@ const buildProductPayload = (req, { isCreate = false } = {}) => {
   return payload;
 };
 
-// CREATE
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /product  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.createProduct = async (req, res) => {
   try {
     // Verify user exists in database before creating product
@@ -84,7 +89,9 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// GET ALL
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /product  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getAllProducts = async (req, res) => {
   try {
     let query = {};
@@ -114,7 +121,9 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// GET ONE
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /product/:id  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getSingleProduct = async (req, res) => {
   res.status(200).json({
     success: true,
@@ -122,7 +131,9 @@ exports.getSingleProduct = async (req, res) => {
   });
 };
 
-// UPDATE
+// ─────────────────────────────────────────────────────────────────────────────
+// PUT /product/:id  -> admin only update
+// ─────────────────────────────────────────────────────────────────────────────
 exports.updateProduct = async (req, res) => {
   try {
     const updateData = buildProductPayload(req);
@@ -147,7 +158,9 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// DELETE
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /product/:id  -> admin only delete
+// ─────────────────────────────────────────────────────────────────────────────
 exports.deleteProduct = async (req, res) => {
   try {
 

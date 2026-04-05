@@ -1,5 +1,9 @@
 const nodemailer = require('nodemailer');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Send Email
+// —————————————————————————————————————————————————————————————————————————————
+
 const sendEmail = async ({ to, subject, text }) => {
   const EMAIL_USER = process.env.EMAIL_USER;
   const EMAIL_PASS = process.env.EMAIL_PASS;

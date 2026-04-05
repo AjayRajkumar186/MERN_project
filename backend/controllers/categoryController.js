@@ -1,5 +1,9 @@
 const Category = require('../models/catgeory');
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /category  →  only admin can create
+// ─────────────────────────────────────────────────────────────────────────────
 exports.createCategory = async (req, res) => {
     try{
         const {name} = req.body;
@@ -21,6 +25,9 @@ exports.createCategory = async (req, res) => {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /category  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getAllCategories = async (req, res) => {
     try{
         const categories = await Category.find();
@@ -38,6 +45,9 @@ exports.getAllCategories = async (req, res) => {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /category/:id  
+// ─────────────────────────────────────────────────────────────────────────────
 exports.getSingleCategory = async (req, res) => {
     try{
         const category = await Category.findById(req.params.id);
@@ -55,6 +65,9 @@ exports.getSingleCategory = async (req, res) => {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PUT /category/:id  -> only admin can update
+// ─────────────────────────────────────────────────────────────────────────────
 exports.updateCategory = async (req, res) => {
     try{
         const {name} = req.body;
@@ -73,6 +86,9 @@ exports.updateCategory = async (req, res) => {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /category/:id  -> only admin can delete
+// ─────────────────────────────────────────────────────────────────────────────
 exports.deleteCategory = async (req, res) => {
     try{
         const category = await Category.findByIdAndDelete(req.params.id);

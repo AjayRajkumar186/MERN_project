@@ -3,6 +3,10 @@ const router = express.Router();
 const {createCategory,getAllCategories,getSingleCategory,updateCategory,deleteCategory} = require('../controllers/categoryController');
 const {checkcategoryExists} = require('../middleware/categoryMiddleware');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Public Routes
+// —————————————————————————————————————————————————————————————————————————————
+
 router.post('/',checkcategoryExists,createCategory);
 router.get('/',getAllCategories);
 router.get('/:id',getSingleCategory);

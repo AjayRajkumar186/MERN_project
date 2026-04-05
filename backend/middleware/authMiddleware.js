@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Extract Token
+// —————————————————————————————————————————————————————————————————————————————
+
 const extractToken = (req) => {
   // 1. Check Authorization header (Bearer token)
   const authHeader = req.get('Authorization') || req.get('authorization');
@@ -23,6 +27,10 @@ const extractToken = (req) => {
 
   return null;
 };
+
+// —————————————————————————————————————————————————————————————————————————————
+// Protect
+// —————————————————————————————————————————————————————————————————————————————
 
 exports.protect = (req, res, next) => {
 
@@ -51,6 +59,10 @@ exports.protect = (req, res, next) => {
     });
   }
 };
+
+// —————————————————————————————————————————————————————————————————————————————
+// Authorize
+// —————————————————————————————————————————————————————————————————————————————
 
 exports.authorize = (...roles) => {
   return (req, res, next) => {

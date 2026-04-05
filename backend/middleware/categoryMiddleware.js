@@ -1,5 +1,9 @@
 const Category = require('../models/catgeory');
 
+// —————————————————————————————————————————————————————————————————————————————
+// Check Category Exists
+// —————————————————————————————————————————————————————————————————————————————
+
 exports.checkcategoryExists = async (req, res, next) => {
     try {
         const { name } = req.body;
